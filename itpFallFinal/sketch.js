@@ -20,15 +20,15 @@ var serial;
 var sensorValue = 0;
 var sensorOldValue = 0;
 var buttonState = 1;
+var lastbuttonState;
 var toggleState = false;
 var toggleState2 = false;
 var stampState = false;
 var stampState2 = false;
 var laststampState = false;
 var resetState= false;
+var brushState= false;
 
-var lefthander=false;
-var righthander=false;
 
 var graphics;
 
@@ -99,18 +99,17 @@ function draw(){
 	// }else{
 	// 	stop();
 	// }
-	
+
+	tipcircle();
 	if(toggleState2==false){
 	righthand();
-	tipcircle();
+
 	
 	} else if(toggleState2==true){
 	lefthand();
-	tipcircle();
 
 	
 	}
-	
 	
 
 	if (sensorValue != sensorOldValue){
@@ -148,11 +147,10 @@ function righthand(){
 		  	
 			brush(buttonState);
 		
-			stamp(snum);
-					
-		}
+			stamp(snum);		
+		}  
 
-		if (handType== "left" && handType != "right" ){
+		else if (handType== "left" && handType != "right" ){
 			erase();
 		}
 
@@ -174,8 +172,6 @@ function lefthand(){
 		else if(handType== "right" && handType != "left" ){
 			erase();
 		}
-
-		
 
 	}
 
@@ -295,6 +291,7 @@ function brush(num){
 	// }
 	// console.log(indexfingerZ);
 
+
 //draw line
 	
 		
@@ -348,18 +345,10 @@ function brush(num){
 }
 
 
-
-
-
-
 function serialEvent() {
 
-
-  	
  	var inString = serial.readLine();
 
-
- 	// console.log(inString);
 
 	if (inString.length > 0) {
 		// inString = inString.trim();
@@ -367,46 +356,37 @@ function serialEvent() {
 		//print(inString);
 
 
-		//hand mode toggle
+		//hand type toggle
 
 		if (inString=="hand toggle on")
 		{
 
 			toggleState2 = false;
+			brushState=true;
 
 
-		}
-
-		if (inString=="hand toggle off")
+		} else if (inString=="hand toggle off")
+		
 		{
 
 			toggleState2 = true;
+			brushState=true;
 
 		}
 
-		
-
-
-		if (toggleState2==false)
-		{
-		
-			righthander=true;
-
-		
-		} 
-
-		if (toggleState2==true)
-		{	
-				
-		
-		
-			lefthander=true;
+		// if(brushState==true){
 			
-		}
+		// 	buttonState=1;
+		// 	// image(graphics,0,0);
+		// 	brushState=false;
+
+		// }
+
+	
 
 
 
-
+		//mode toggle
 
 		if (inString == "mode toggle on")
 		{
@@ -437,7 +417,6 @@ function serialEvent() {
 		if (toggleState == true && stampState == true)
 			
 		{	
-			// console.log("STAMP");
 
 			snum = 1;
 
@@ -470,15 +449,18 @@ function serialEvent() {
 
 		if (inString =="ON"){
 
-			graphics.background(0);
-		
+			
+			resetState=true;
+
+
 		}
 
-		if(resetState){
-			graphics.background(255,255,0);
-			resetState=false;
+		if(resetState==true){
+			graphics.background(0);
+			
 			buttonState=1;
 			image(graphics,0,0);
+			resetState=false;
 
 		}
 
